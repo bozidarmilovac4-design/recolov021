@@ -28,13 +28,15 @@
         input { padding: 12px; font-size: 18px; text-transform: uppercase; border: 2px solid #3a3a3c; border-radius: 4px; width: 160px; outline: none; background: #121213; color: white; text-align: center; }
         input:focus { border-color: #ff9000; }
         
+        /* OVO ČINI DA PLACEHOLDER NESTANE ČIM SE KLIKNE */
+        input:focus::placeholder { color: transparent; }
+
         button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #ff9000; color: white; border: none; border-radius: 4px; font-weight: bold; margin-left: 5px; }
         button:hover { background: #e68200; }
 
         #message { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; }
         .next-word-note { margin-top: 15px; font-size: 1rem; color: #ff9000; font-weight: bold; }
 
-        /* MODAL STIL */
         .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .modal-content { background-color: #121213; padding: 25px; border: 1px solid #3a3a3c; width: 85%; max-width: 450px; border-radius: 10px; text-align: left; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #818384; }
@@ -74,7 +76,7 @@
     <div class="brand">021.rs</div>
     <div id="board"></div>
     <div class="controls">
-        <input id="guessInput" maxlength="5" placeholder="REČ" autofocus>
+        <input id="guessInput" maxlength="5" placeholder="REČ" autofocus autocomplete="off">
         <button id="submitBtn">OK</button>
     </div>
     <div id="message"></div>
