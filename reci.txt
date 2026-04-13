@@ -45,7 +45,6 @@ adetu
 Adler
 Adobi
 adova
-Adolf
 aduta
 adute
 aduti
@@ -84,8 +83,6 @@ alavi
 alavo
 alali
 alama
-Alana
-Alanu
 alarm
 alasa
 alase
@@ -114,25 +111,15 @@ alema
 aleme
 alemi
 alemu
-Alena
-Aleni
-Alenu
 alefa
 Alžir
 alibi
 Alija
-Alije
-Aliji
-Aliju
 alila
 alile
 alina
 aline
 alinu
-Alisa
-Alise
-Alisi
-Alisu
 aliće
 alkar
 alkom
@@ -140,7 +127,6 @@ alovu
 aloja
 aloje
 alter
-Alfom
 alčak
 amama
 amamu
@@ -161,8 +147,6 @@ ameri
 amigo
 amove
 amovi
-Amora
-Amore
 amosa
 amper
 ampir
@@ -180,14 +164,6 @@ anini
 anino
 aninu
 anisa
-Anita
-Anite
-Anitu
-Anića
-Anica
-Anice
-Anici
-Anicu
 anjon
 anker
 Ankom
@@ -205,7 +181,6 @@ apela
 apele
 apeli
 apelu
-Apisa
 apoen
 Apolo
 april
@@ -227,18 +202,14 @@ arije
 ariji
 ariju
 arima
-arkan
 arkom
 aroma
 arome
 aromi
 aromu
 arsen
-Arsić
-Artur
 arhiv
 aršin
-Asima
 asket
 asova
 asove
@@ -276,7 +247,6 @@ Atine
 Atini
 Atinu
 atlas
-Atlon
 atova
 atove
 atovi
@@ -286,11 +256,6 @@ atoma
 atome
 atomi
 atomu
-Atosa
-Atosu
-Aćima
-Aćime
-Aćimu
 audio
 aurom
 autom
@@ -429,7 +394,6 @@ basom
 basta
 batak
 batin
-batić
 batke
 batli
 batom
@@ -521,7 +485,6 @@ beleg
 beleo
 belim
 belio
-belić
 belih
 belka
 belke
@@ -713,8 +676,6 @@ bljak
 bljuj
 Boban
 bobar
-Bobek
-Bobić
 boboa
 bobov
 bobom
@@ -723,13 +684,11 @@ bobuk
 bobur
 bovan
 boven
-bović
 bovom
 bogaz
 bogat
 bogac
 boger
-Bogić
 bogme
 bogov
 Bogom
@@ -749,8 +708,6 @@ boema
 boemi
 boemu
 božaj
-Božin
-Božić
 božja
 božje
 božji
@@ -769,7 +726,7 @@ bojen
 Bojer
 bojim
 bojio
-Bojić
+Božić
 bojiš
 Bojka
 Bojke
@@ -789,7 +746,6 @@ bojsi
 bojte
 bokal
 bokan
-bokić
 bokom
 bokor
 boksa
@@ -799,7 +755,6 @@ bokca
 bolan
 boleo
 bolid
-bolić
 boliš
 bolna
 bolne
@@ -822,7 +777,6 @@ bombu
 bonam
 Bonda
 Bondu
-bonić
 bonom
 bonum
 bonus
@@ -842,7 +796,6 @@ borim
 borin
 borio
 Boris
-borić
 borih
 borič
 boriš
@@ -873,7 +826,6 @@ Borči
 Borču
 boršč
 bosim
-bosić
 bosih
 boske
 boski
@@ -904,8 +856,6 @@ bočne
 bočni
 bočno
 bočnu
-bošić
-Boška
 Boško
 Bošku
 bošča
@@ -1002,7 +952,6 @@ brzaj
 brzak
 brzam
 brzim
-brzić
 brzih
 brzog
 brzoj
@@ -1035,10 +984,8 @@ briši
 brišu
 brkat
 brkaš
-Brkić
 brknu
 brkom
-brlić
 brlog
 brlja
 brlje
@@ -1084,7 +1031,6 @@ bruto
 bruci
 Brčak
 brčin
-brčić
 brčka
 Brčko
 brčne
@@ -1119,13 +1065,11 @@ buđen
 Buena
 Bueno
 buzek
-buzić
 bujad
 bujan
 bujao
 bujar
 bujaš
-Bujić
 bujna
 bujne
 bujni
@@ -1139,7 +1083,6 @@ bukvi
 bukvu
 Buker
 buket
-bukić
 bukne
 bukni
 buknu
@@ -1148,7 +1091,6 @@ bukom
 bukte
 bukti
 Bulat
-Bulić
 bulka
 bulke
 bulku
@@ -1164,7 +1106,6 @@ bundi
 bundu
 bunim
 bunio
-bunić
 buniš
 bunom
 bunta
@@ -1182,9 +1123,6 @@ burek
 burza
 burzi
 burim
-burić
-Burič
-Burke
 burma
 Burma
 burme
@@ -1212,7 +1150,6 @@ butne
 butni
 butnu
 bućan
-bućić
 bućka
 bućne
 bućnu
@@ -1223,7 +1160,6 @@ buhom
 Bucka
 bučan
 bučer
-bučić
 bučja
 bučje
 bučna
@@ -1239,7 +1175,6 @@ bušač
 bušel
 bušim
 bušio
-Bušić
 bušna
 bušni
 bušnu
@@ -1275,7 +1210,6 @@ važno
 važnu
 vazal
 vazda
-vazić
 vazna
 vaznu
 vazom
@@ -1302,7 +1236,6 @@ valja
 valju
 vamoš
 Vanga
-vanić
 Vanja
 Vanje
 Vanji
@@ -1340,7 +1273,6 @@ Varoš
 varte
 varci
 Vasin
-Vasić
 Vasje
 Vaska
 Vaske
@@ -1356,7 +1288,6 @@ vatro
 vatru
 vafle
 vafli
-vacić
 vašar
 vašeg
 vašem
@@ -1406,7 +1337,6 @@ Vejna
 vejce
 veker
 vekio
-Vekić
 vekna
 vekne
 vekni
@@ -1418,7 +1348,6 @@ Veles
 velik
 velim
 velin
-velić
 veliš
 velka
 velki
@@ -1434,7 +1363,6 @@ velje
 velji
 veljo
 velju
-vemić
 venac
 Vendi
 venem
@@ -1464,7 +1392,6 @@ veren
 vereš
 verin
 verio
-verić
 Verka
 verna
 verne
@@ -1477,7 +1404,6 @@ veruj
 vesel
 veseo
 vesin
-Vesić
 vesko
 vesla
 Vesli
@@ -1554,7 +1480,6 @@ vidik
 vidim
 vidin
 vidio
-Vidić
 vidiš
 vidna
 vidne
@@ -1595,7 +1520,6 @@ vikao
 vikar
 vikah
 vikač
-vikić
 vikli
 vikne
 vikni
@@ -1604,7 +1528,6 @@ vikom
 viler
 vilim
 vilin
-vilić
 vilka
 vilma
 vilom
@@ -1659,8 +1582,6 @@ vitao
 vitas
 vitez
 vitek
-vitin
-vitić
 vitih
 vitka
 vitke
@@ -14482,7 +14403,6 @@ tušti
 Ćirom
 ćitav
 ćitap
-ćićko
 ćifta
 ćifte
 ćkolu
