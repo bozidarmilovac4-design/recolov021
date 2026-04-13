@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rečolov - 021</title>
+    <title>Rečolov - 021.rs</title>
     <style>
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
@@ -14,34 +14,64 @@
             padding-top: 30px;
         }
         h1 { margin-bottom: 5px; letter-spacing: 2px; }
-        /* 021 Narandžasta za brending */
         .brand { font-weight: bold; color: #ff9000; font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 1px; }
         
         #board { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; width: 300px; margin: 0 auto 20px auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { border: 2px solid #3a3a3c; height: 55px; width: 55px; line-height: 55px; font-size: 28px; font-weight: bold; text-transform: uppercase; user-select: none; }
         
-        /* Tačna polja su opet ZELENA */
         .correct { background: #538d4e; border-color: #538d4e; color: white; }
         .present { background: #b59f3b; border-color: #b59f3b; color: white; }
         .absent { background: #3a3a3c; border-color: #3a3a3c; color: white; }
         
         .controls { margin-top: 20px; }
         input { padding: 12px; font-size: 18px; text-transform: uppercase; border: 2px solid #3a3a3c; border-radius: 4px; width: 160px; outline: none; background: #121213; color: white; text-align: center; }
-        input:focus { border-color: #ff9000; } /* Fokus ostaje narandžast */
+        input:focus { border-color: #ff9000; }
         
         button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #ff9000; color: white; border: none; border-radius: 4px; font-weight: bold; margin-left: 5px; }
         button:hover { background: #e68200; }
 
-        #message { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; color: #ffffff; }
-        /* Napomena za sutra u narandžastoj boji */
+        #message { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; }
         .next-word-note { margin-top: 15px; font-size: 1rem; color: #ff9000; font-weight: bold; }
+
+        /* MODAL STIL */
+        .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
+        .modal-content { background-color: #121213; padding: 25px; border: 1px solid #3a3a3c; width: 85%; max-width: 450px; border-radius: 10px; text-align: left; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #818384; }
+        .modal-content h2 { text-align: center; margin-top: 0; }
+        .example { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+        .mini-tile { width: 35px; height: 35px; border: 2px solid #3a3a3c; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .btn-start { display: block; width: 100%; margin-top: 20px; padding: 15px; background: #ff9000; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
 
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Kako igrati?</h2>
+            <p>Pogodite <strong>REČOLOV</strong> u 6 pokušaja.</p>
+            <ul>
+                <li>Svaki pokušaj mora biti ispravna reč od 5 slova.</li>
+                <li>Boja polja se menja kako biste videli koliko ste blizu.</li>
+            </ul>
+            <hr style="border: 0.5px solid #3a3a3c; margin: 20px 0;">
+            <p><strong>Primeri:</strong></p>
+            <div class="example">
+                <div class="mini-tile correct">V</div> <span>Slovo je u reči i na tačnom mestu.</span>
+            </div>
+            <div class="example">
+                <div class="mini-tile present">I</div> <span>Slovo je u reči, ali na pogrešnom mestu.</span>
+            </div>
+            <div class="example">
+                <div class="mini-tile absent">U</div> <span>Slovo se ne nalazi u reči.</span>
+            </div>
+            <button class="btn-start" onclick="closeModal()">KRENI</button>
+        </div>
+    </div>
+
     <h1>REČOLOV</h1>
-    <div class="brand">PORTAL 021</div>
+    <div class="brand">021.rs</div>
     <div id="board"></div>
     <div class="controls">
         <input id="guessInput" maxlength="5" placeholder="REČ" autofocus>
@@ -56,6 +86,11 @@ let WORD_SET = new Set();
 let secret = "";
 let currentRow = 0;
 let gameOver = false;
+
+function closeModal() {
+    document.getElementById("howToPlayModal").style.display = "none";
+    document.getElementById("guessInput").focus();
+}
 
 function seededShuffle(array, seed) {
     let m = array.length, t, i;
@@ -134,7 +169,6 @@ function submitGuess() {
         gameOver = true;
         input.disabled = true;
         document.getElementById("nextNote").style.display = "block";
-        
         if (currentRow === 0) showMessage("Genijalno! Pogodak iz prve! 🏆");
         else if (currentRow < 3) showMessage("Svaka čast! Odličan rezultat! 👏");
         else if (currentRow < 5) showMessage("Dobar posao! Pogodili ste! ✅");
