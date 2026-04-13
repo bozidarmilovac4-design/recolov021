@@ -14,29 +14,41 @@
             padding-top: 30px;
         }
         h1 { margin-bottom: 5px; letter-spacing: 2px; }
-        .brand { font-weight: bold; color: #538d4e; font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 1px; }
+        /* 021 Narandžasta za brending */
+        .brand { font-weight: bold; color: #ff9000; font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 1px; }
+        
         #board { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; width: 300px; margin: 0 auto 20px auto; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
         .tile { border: 2px solid #3a3a3c; height: 55px; width: 55px; line-height: 55px; font-size: 28px; font-weight: bold; text-transform: uppercase; user-select: none; }
-        .correct { background: #538d4e; border-color: #538d4e; }
-        .present { background: #b59f3b; border-color: #b59f3b; }
-        .absent { background: #3a3a3c; border-color: #3a3a3c; }
+        
+        /* Tačna polja su opet ZELENA */
+        .correct { background: #538d4e; border-color: #538d4e; color: white; }
+        .present { background: #b59f3b; border-color: #b59f3b; color: white; }
+        .absent { background: #3a3a3c; border-color: #3a3a3c; color: white; }
+        
         .controls { margin-top: 20px; }
         input { padding: 12px; font-size: 18px; text-transform: uppercase; border: 2px solid #3a3a3c; border-radius: 4px; width: 160px; outline: none; background: #121213; color: white; text-align: center; }
-        input:focus { border-color: #538d4e; }
-        button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #538d4e; color: white; border: none; border-radius: 4px; font-weight: bold; margin-left: 5px; }
-        button:hover { background: #6aaa64; }
+        input:focus { border-color: #ff9000; } /* Fokus ostaje narandžast */
+        
+        button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #ff9000; color: white; border: none; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+        button:hover { background: #e68200; }
+
+        #message { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; color: #ffffff; }
+        /* Napomena za sutra u narandžastoj boji */
+        .next-word-note { margin-top: 15px; font-size: 1rem; color: #ff9000; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>REČOLOV</h1>
-    <div class="brand">021</div>
+    <div class="brand">PORTAL 021</div>
     <div id="board"></div>
     <div class="controls">
         <input id="guessInput" maxlength="5" placeholder="REČ" autofocus>
         <button id="submitBtn">OK</button>
     </div>
+    <div id="message"></div>
+    <div id="nextNote" class="next-word-note" style="display:none;">Sutra vas čeka nova reč - vidimo se opet!</div>
 
 <script>
 let WORDS = [];
@@ -49,9 +61,7 @@ function seededShuffle(array, seed) {
     let m = array.length, t, i;
     while (m) {
         i = Math.floor(Math.abs(Math.sin(seed++)) * m--);
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
+        t = array[m]; array[m] = array[i]; array[i] = t;
     }
     return array;
 }
@@ -60,34 +70,17 @@ async function loadWords() {
     try {
         const response = await fetch('reci.txt');
         const text = await response.text();
-        
-        WORDS = text.split(/\r?\n/)
-                    .map(w => w.trim().toUpperCase())
-                    .filter(w => w.length === 5);
-        
+        WORDS = text.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
         WORD_SET = new Set(WORDS);
-
-        if (WORDS.length === 0) {
-            alert("Greška: Fajl reci.txt je prazan ili nema reči od 5 slova.");
-            return;
-        }
-
         const shuffled = seededShuffle([...WORDS], 12345);
-        const start = new Date(2024, 0, 1);
-        const today = new Date();
-        const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-        
+        const diff = Math.floor((new Date() - new Date(2024, 0, 1)) / 86400000);
         secret = shuffled[diff % shuffled.length];
         createBoard();
-    } catch (err) {
-        console.error("Ne mogu da učitam reci.txt", err);
-        alert("Greška pri učitavanju reči.");
-    }
+    } catch (err) { document.getElementById("message").innerText = "Greška pri učitavanju baze."; }
 }
 
 function createBoard() {
     const board = document.getElementById("board");
-    board.innerHTML = "";
     for (let i = 0; i < 6; i++) {
         const row = document.createElement("div");
         row.className = "row";
@@ -100,49 +93,36 @@ function createBoard() {
     }
 }
 
-function evaluateGuess(guess, secret) {
-    let result = Array(5).fill("absent");
-    let secretArr = secret.split("");
-    let guessArr = guess.split("");
+function showMessage(msg) {
+    document.getElementById("message").innerText = msg;
+}
 
+function evaluateGuess(guess, secretWord) {
+    let res = Array(5).fill("absent");
+    let sArr = secretWord.split("");
+    let gArr = guess.split("");
     for (let i = 0; i < 5; i++) {
-        if (guessArr[i] === secretArr[i]) {
-            result[i] = "correct";
-            secretArr[i] = null;
-            guessArr[i] = null;
+        if (gArr[i] === sArr[i]) { res[i] = "correct"; sArr[i] = null; gArr[i] = null; }
+    }
+    for (let i = 0; i < 5; i++) {
+        if (gArr[i] !== null) {
+            let idx = sArr.indexOf(gArr[i]);
+            if (idx !== -1) { res[i] = "present"; sArr[idx] = null; }
         }
     }
-
-    for (let i = 0; i < 5; i++) {
-        if (guessArr[i] !== null) {
-            let index = secretArr.indexOf(guessArr[i]);
-            if (index !== -1) {
-                result[i] = "present";
-                secretArr[index] = null;
-            }
-        }
-    }
-    return result;
+    return res;
 }
 
 function submitGuess() {
     if (gameOver) return;
-
     const input = document.getElementById("guessInput");
     const guess = input.value.toUpperCase().trim();
 
-    if (guess.length !== 5) {
-        alert("Reč mora imati 5 slova!");
-        return;
-    }
+    if (guess.length !== 5) { showMessage("Reč mora imati 5 slova!"); return; }
+    if (!WORD_SET.has(guess)) { showMessage("Reč nije u bazi!"); return; }
 
-    if (!WORD_SET.has(guess)) {
-        alert("Reč nije u bazi!");
-        return;
-    }
-
-    const board = document.getElementById("board");
-    const tiles = board.children[currentRow].children;
+    showMessage("");
+    const tiles = document.getElementById("board").children[currentRow].children;
     const result = evaluateGuess(guess, secret);
 
     for (let i = 0; i < 5; i++) {
@@ -153,7 +133,12 @@ function submitGuess() {
     if (guess === secret) {
         gameOver = true;
         input.disabled = true;
-        setTimeout(() => alert("Čestitamo!"), 200);
+        document.getElementById("nextNote").style.display = "block";
+        
+        if (currentRow === 0) showMessage("Genijalno! Pogodak iz prve! 🏆");
+        else if (currentRow < 3) showMessage("Svaka čast! Odličan rezultat! 👏");
+        else if (currentRow < 5) showMessage("Dobar posao! Pogodili ste! ✅");
+        else showMessage("Uf, zamalo! Uspeli ste u poslednjem trenutku! 😅");
         return;
     }
 
@@ -163,16 +148,14 @@ function submitGuess() {
     if (currentRow === 6) {
         gameOver = true;
         input.disabled = true;
-        setTimeout(() => alert("Kraj! Rešenje je: " + secret), 200);
+        document.getElementById("nextNote").style.display = "block";
+        showMessage("Kraj igre! Rešenje je bilo: " + secret);
     }
 }
 
 loadWords();
-
-document.getElementById("submitBtn").addEventListener("click", submitGuess);
-document.getElementById("guessInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") submitGuess();
-});
+document.getElementById("submitBtn").onclick = submitGuess;
+document.getElementById("guessInput").onkeypress = (e) => { if (e.key === "Enter") submitGuess(); };
 </script>
 </body>
 </html>
