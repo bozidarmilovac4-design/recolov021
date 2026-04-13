@@ -1,0 +1,135 @@
+let WORDS = [];
+let WORD_SET = new Set();
+let secret = "";
+let currentRow = 0;
+let gameOver = false; // Dodajemo proveru za kraj igre
+
+function seededShuffle(array, seed) {
+    let m = array.length, t, i;
+    while (m) {
+        i = Math.floor(Math.abs(Math.sin(seed++)) * m--);
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+    return array;
+}
+
+async function loadWords() {
+    try {
+        const response = await fetch('reci.txt');
+        const text = await response.text();
+        
+        // Poboljšan split koji čisti sve nevidljive karaktere
+        WORDS = text.split(/\r?\n/)
+                    .map(w => w.trim().toUpperCase())
+                    .filter(w => w.length === 5);
+        
+        WORD_SET = new Set(WORDS);
+
+        if (WORDS.length === 0) {
+            alert("Greška: Fajl reci.txt je prazan ili nema reči od 5 slova.");
+            return;
+        }
+
+        const shuffled = seededShuffle([...WORDS], 12345);
+        const start = new Date(2024, 0, 1);
+        const today = new Date();
+        const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+        
+        secret = shuffled[diff % shuffled.length];
+        createBoard();
+    } catch (err) {
+        console.error("Ne mogu da učitam reci.txt", err);
+        alert("Greška pri učitavanju reči.");
+    }
+}
+
+function createBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    for (let i = 0; i < 6; i++) {
+        const row = document.createElement("div");
+        row.className = "row";
+        for (let j = 0; j < 5; j++) {
+            const tile = document.createElement("div");
+            tile.className = "tile";
+            row.appendChild(tile);
+        }
+        board.appendChild(row);
+    }
+}
+
+function evaluateGuess(guess, secret) {
+    let result = Array(5).fill("absent");
+    let secretArr = secret.split("");
+    let guessArr = guess.split("");
+
+    for (let i = 0; i < 5; i++) {
+        if (guessArr[i] === secretArr[i]) {
+            result[i] = "correct";
+            secretArr[i] = null;
+            guessArr[i] = null;
+        }
+    }
+
+    for (let i = 0; i < 5; i++) {
+        if (guessArr[i] !== null) {
+            let index = secretArr.indexOf(guessArr[i]);
+            if (index !== -1) {
+                result[i] = "present";
+                secretArr[index] = null;
+            }
+        }
+    }
+    return result;
+}
+
+function submitGuess() {
+    if (gameOver) return; // Ne dozvoljava unos ako je kraj
+
+    const input = document.getElementById("guessInput");
+    const guess = input.value.toUpperCase().trim();
+
+    if (guess.length !== 5) {
+        alert("Reč mora imati 5 slova!");
+        return;
+    }
+
+    if (!WORD_SET.has(guess)) {
+        alert("Reč nije u bazi!");
+        return;
+    }
+
+    const board = document.getElementById("board");
+    const tiles = board.children[currentRow].children;
+    const result = evaluateGuess(guess, secret);
+
+    for (let i = 0; i < 5; i++) {
+        tiles[i].textContent = guess[i];
+        tiles[i].classList.add(result[i]);
+    }
+
+    if (guess === secret) {
+        gameOver = true;
+        input.disabled = true;
+        setTimeout(() => alert("Čestitamo!"), 200);
+        return;
+    }
+
+    currentRow++;
+    input.value = "";
+
+    if (currentRow === 6) {
+        gameOver = true;
+        input.disabled = true;
+        setTimeout(() => alert("Kraj! Rešenje je: " + secret), 200);
+    }
+}
+
+loadWords();
+
+document.getElementById("submitBtn").addEventListener("click", submitGuess);
+document.getElementById("guessInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") submitGuess();
+});
