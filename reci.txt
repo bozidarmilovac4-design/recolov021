@@ -38,7 +38,6 @@ ajvar
 ajgir
 ajncu
 Ajfel
-akamo
 akata
 akord
 akrep
