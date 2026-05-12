@@ -87,7 +87,6 @@ alile
 alina
 aline
 alinu
-aliće
 alkar
 alkom
 alovu
@@ -1519,8 +1518,6 @@ vitlu
 vitni
 vitog
 vitom
-vićem
-vićić
 vihor
 vicem
 vicka
@@ -1537,7 +1534,6 @@ višak
 višeg
 višem
 višim
-višić
 viših
 viška
 višku
@@ -13514,7 +13510,6 @@ tremo
 tremu
 trena
 trend
-trent
 trenu
 trese
 tresi
