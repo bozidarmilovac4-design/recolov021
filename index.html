@@ -1,203 +1,385 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rečolov - 021.rs</title>
-    <style>
-        body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            background: #121213; 
-            color: white; 
-            margin: 0;
-            padding-top: 30px;
-        }
-        h1 { margin-bottom: 5px; letter-spacing: 2px; }
-        .brand { font-weight: bold; color: #ff9000; font-size: 1.2rem; margin-bottom: 20px; letter-spacing: 1px; }
-        
-        #board { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; width: 300px; margin: 0 auto 20px auto; }
-        .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .tile { border: 2px solid #3a3a3c; height: 55px; width: 55px; line-height: 55px; font-size: 28px; font-weight: bold; text-transform: uppercase; user-select: none; }
-        
-        .correct { background: #538d4e; border-color: #538d4e; color: white; }
-        .present { background: #b59f3b; border-color: #b59f3b; color: white; }
-        .absent { background: #3a3a3c; border-color: #3a3a3c; color: white; }
-        
-        .controls { margin-top: 20px; }
-        input { padding: 12px; font-size: 18px; text-transform: uppercase; border: 2px solid #3a3a3c; border-radius: 4px; width: 160px; outline: none; background: #121213; color: white; text-align: center; }
-        input:focus { border-color: #ff9000; }
-        input:focus::placeholder { color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rečolov - 021.rs</title>
+  <style>
+    :root {
+      --c-orange: #ff9000;
+      --c-orange-dark: #cc7400;
+      --c-correct: #3d9e55;
+      --c-present: #c49a1a;
+      --c-tile-empty: #18181c;
+      --c-tile-filled: #26262e;
+      --c-tile-absent: #222228;
+      --tile: 54px;
+      --gap: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0e0e10; color: #f0f0f0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    #app { max-width: 500px; margin: 0 auto; padding: 0 10px 40px; }
 
-        button { padding: 12px 25px; font-size: 18px; cursor: pointer; background: #ff9000; color: white; border: none; border-radius: 4px; font-weight: bold; margin-left: 5px; }
-        button:hover { background: #e68200; }
+    #header { display: flex; align-items: center; justify-content: space-between; padding: 14px 2px 12px; border-bottom: 1px solid #222228; margin-bottom: 10px; }
+    #title-block { display: flex; align-items: baseline; gap: 10px; }
+    #title { font-size: 20px; font-weight: 800; letter-spacing: 4px; color: #f0f0f0; }
+    #brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0; align-self: center; }
+    #brand { font-size: 11px; font-weight: 800; color: var(--c-orange); letter-spacing: 2.5px; }
+    #help-btn { background: none; border: 1.5px solid #333; color: #888; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    #help-btn:hover { border-color: var(--c-orange); color: var(--c-orange); }
 
-        #message { margin-top: 20px; font-weight: bold; font-size: 1.1rem; min-height: 1.5em; }
-        .next-word-note { margin-top: 15px; font-size: 1rem; color: #ff9000; font-weight: bold; }
+    #board { display: flex; flex-direction: column; align-items: center; gap: var(--gap); margin-bottom: 14px; }
+    .row { display: flex; gap: var(--gap); }
 
-        /* MODAL STIL */
-        .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background-color: #121213; padding: 25px; border: 1px solid #3a3a3c; width: 85%; max-width: 450px; border-radius: 10px; text-align: left; position: relative; }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #818384; }
-        .modal-content h2 { text-align: center; margin-top: 0; }
-        .example { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-        .mini-tile { width: 35px; height: 35px; border: 2px solid #3a3a3c; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .btn-start { display: block; width: 100%; margin-top: 20px; padding: 15px; background: #ff9000; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
-    </style>
+    .circle-tile {
+      width: var(--tile); height: var(--tile);
+      border-radius: 50%;
+      background: var(--c-tile-empty);
+      border: 2px solid #2a2a30;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; text-transform: uppercase;
+      color: #f0f0f0; user-select: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+    .circle-tile.filled { background: var(--c-tile-filled); border-color: #555; }
+    .circle-tile.correct { background: var(--c-correct); border-color: var(--c-correct); color: #fff; }
+    .circle-tile.present { background: var(--c-present); border-color: var(--c-present); color: #fff; }
+    .circle-tile.absent { background: var(--c-tile-absent); border-color: #2a2a30; color: #555; }
+    .circle-tile.pop { animation: pop 0.12s ease; }
+    @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.18)} 100%{transform:scale(1)} }
+    .circle-tile.shake { animation: shake 0.38s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    .circle-tile.reveal { animation: reveal 0.35s ease forwards; }
+    @keyframes reveal { 0%{transform:scale(1)} 40%{transform:scale(0.85)} 100%{transform:scale(1)} }
+
+    #message-area { text-align: center; min-height: 26px; margin-bottom: 10px; }
+    #message { font-size: 13px; font-weight: 700; color: var(--c-orange); letter-spacing: 0.5px; }
+
+    #keyboard { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .kb-row { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+    .kb-key {
+      height: 42px; min-width: 28px; padding: 0 6px;
+      background: #222228; border: none; border-radius: 50%;
+      color: #ddd; font-size: 12px; font-weight: 800;
+      cursor: pointer; text-transform: uppercase;
+      transition: background 0.15s, color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; width: 34px;
+    }
+    .kb-key:active { transform: scale(0.9); }
+    .kb-key.wide { border-radius: 21px; width: auto; min-width: 46px; font-size: 11px; }
+    .kb-key.correct { background: var(--c-correct); color: #fff; }
+    .kb-key.present { background: var(--c-present); color: #fff; }
+    .kb-key.absent { background: #18181c; color: #3a3a40; text-decoration: line-through; }
+
+    #input-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+    #guessInput {
+      padding: 9px 14px; font-size: 17px; text-transform: uppercase; letter-spacing: 3px;
+      border: 1.5px solid #2e2e38; border-radius: 24px; width: 175px;
+      background: #16161a; color: #f0f0f0; text-align: center; outline: none;
+    }
+    #guessInput:focus { border-color: var(--c-orange); }
+    #guessInput::placeholder { color: #444; letter-spacing: 1px; font-size: 13px; }
+    #guessInput:disabled { opacity: 0.4; }
+    #submitBtn { padding: 9px 18px; font-size: 14px; font-weight: 800; background: var(--c-orange); color: #fff; border: none; border-radius: 22px; cursor: pointer; letter-spacing: 1px; }
+    #submitBtn:hover { background: var(--c-orange-dark); }
+
+    #next-note { text-align: center; font-size: 12px; color: #888; margin-top: 10px; display: none; line-height: 1.5; }
+    #next-note strong { color: var(--c-orange); }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; }
+    .modal-box { background: #141416; border: 1px solid #2a2a30; border-radius: 16px; padding: 24px 20px 18px; width: 92%; max-width: 380px; position: relative; max-height: 92vh; overflow-y: auto; }
+    .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: #555; font-size: 20px; cursor: pointer; }
+    .modal-close:hover { color: #fff; }
+    .modal-box h2 { font-size: 16px; font-weight: 800; letter-spacing: 2px; text-align: center; margin-bottom: 12px; color: #f0f0f0; }
+    .modal-box p, .modal-box li { font-size: 13px; color: #aaa; line-height: 1.65; }
+    .modal-box ul { padding-left: 16px; margin: 6px 0 10px; }
+    .modal-box hr { border: none; border-top: 1px solid #222228; margin: 12px 0; }
+    .example-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+    .mini-circle { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #fff; border: 2px solid transparent; }
+    .mini-circle.correct { background: var(--c-correct); }
+    .mini-circle.present { background: var(--c-present); }
+    .mini-circle.absent { background: #222228; color: #555; border-color: #2a2a30; }
+    .modal-start-btn { display: block; width: 100%; padding: 13px; background: var(--c-orange); border: none; color: #fff; font-size: 15px; font-weight: 800; border-radius: 30px; cursor: pointer; margin-top: 16px; letter-spacing: 2px; }
+    .modal-start-btn:hover { background: var(--c-orange-dark); }
+    .orange-pill { display: inline-block; background: rgba(255,144,0,0.12); color: var(--c-orange); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; border-radius: 20px; padding: 3px 10px; margin-bottom: 10px; }
+  </style>
 </head>
 <body>
 
-    <div id="howToPlayModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2>Kako igrati?</h2>
-            <p>Pogodite <strong>REČOLOV</strong> u 6 pokušaja.</p>
-            <ul>
-                <li>Svaki pokušaj mora biti ispravna reč od 5 slova.</li>
-                <li>Boja polja se menja kako biste videli koliko ste blizu.</li>
-            </ul>
-            <hr style="border: 0.5px solid #3a3a3c; margin: 20px 0;">
-            <p><strong>Primeri:</strong></p>
-            <div class="example">
-                <div class="mini-tile correct">V</div> <span>Slovo je u reči i na tačnom mestu.</span>
-            </div>
-            <div class="example">
-                <div class="mini-tile present">I</div> <span>Slovo je u reči, ali na pogrešnom mestu.</span>
-            </div>
-            <div class="example">
-                <div class="mini-tile absent">U</div> <span>Slovo se ne nalazi u reči.</span>
-            </div>
-            <button class="btn-start" onclick="closeModal()">KRENI</button>
-        </div>
+<div id="app">
+  <div id="modal-how" class="modal-overlay">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div style="text-align:center"><span class="orange-pill">021.RS</span></div>
+      <h2>KAKO IGRATI?</h2>
+      <p>Pogodite <strong style="color:#f0f0f0">REČOLOV</strong> u 6 pokušaja.</p>
+      <ul>
+        <li>Svaki pokušaj mora biti ispravna reč od 5 slova.</li>
+        <li>Boja krugova otkriva koliko ste blizu.</li>
+      </ul>
+      <hr>
+      <div class="example-row"><div class="mini-circle correct">V</div><span>Slovo je na <strong style="color:#f0f0f0">tačnom mestu</strong>.</span></div>
+      <div class="example-row"><div class="mini-circle present">O</div><span>Slovo postoji, ali je na <strong style="color:#f0f0f0">pogrešnom mestu</strong>.</span></div>
+      <div class="example-row"><div class="mini-circle absent">U</div><span>Slovo se <strong style="color:#f0f0f0">ne nalazi</strong> u reči.</span></div>
+      <hr>
+      <p><strong style="color:#f0f0f0">LJ</strong> i <strong style="color:#f0f0f0">NJ</strong> su posebna dugmad na tastaturi — unose se kao jedno slovo.</p>
+      <button class="modal-start-btn" onclick="closeModal()">KRENI</button>
     </div>
+  </div>
 
-    <h1>REČOLOV</h1>
-    <div class="brand">021.rs</div>
-    <div id="board"></div>
-    <div class="controls">
-        <input id="guessInput" maxlength="5" placeholder="REČ" autofocus autocomplete="off">
-        <button id="submitBtn">OK</button>
+  <div id="header">
+    <div id="title-block">
+      <div id="title">REČOLOV</div>
+      <div id="brand-dot" aria-hidden="true"></div>
+      <div id="brand">021.RS</div>
     </div>
-    <div id="message"></div>
-    <div id="nextNote" class="next-word-note" style="display:none;">Sutra vas čeka nova reč - vidimo se opet!</div>
+    <button id="help-btn" onclick="openModal()" aria-label="Kako igrati">?</button>
+  </div>
+
+  <div id="message-area"><div id="message"></div></div>
+  <div id="board"></div>
+  <div id="keyboard"></div>
+  <div id="input-row">
+    <input id="guessInput" maxlength="7" placeholder="unesite reč" autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button id="submitBtn" onclick="submitGuess()">OK</button>
+  </div>
+  <div id="next-note"></div>
+</div>
 
 <script>
-let WORDS = [];
-let WORD_SET = new Set();
-let secret = "";
-let currentRow = 0;
-let gameOver = false;
+  // --- KONFIGURACIJA ---
+  // Stavite listu reči u reci.txt u isti folder kao ovaj fajl.
+  // Format: jedna reč po redu, samo reči od 5 slova (ili 5 "glasova" — LJ/NJ se računaju kao jedan).
+  // Ako reci.txt nije dostupan, koristi se fallback lista ispod.
 
-function closeModal() {
-    document.getElementById("howToPlayModal").style.display = "none";
-    document.getElementById("guessInput").focus();
-}
+  const FALLBACK = [
+    "SRBIN","VATRA","KAMEN","LOPTA","PESMA","ZEMLJA","DRAGA","CRVEN","SNAGA","NOVAC",
+    "BRIGA","ZRAKA","MIRAN","VETAR","KAPUT","RAVAN","LEKAR","PLIMA","TURBO","NAMAZ",
+    "BRLOG","KRIVA","VRSTA","KORAK","SVILA","MAGLA","PRUGA","MAŠTA","GRUDA","ZLOBA",
+    "DRAGI","MUTAN","VOLAN","BLAGO","SUNCE","TRAVA","POLJE"
+  ];
 
-function seededShuffle(array, seed) {
-    let m = array.length, t, i;
-    while (m) {
-        // Koristimo sinusnu funkciju za deterministički, ali nasumičan raspored
-        i = Math.floor(Math.abs(Math.sin(seed++)) * m--);
-        t = array[m]; array[m] = array[i]; array[i] = t;
+  const KB_ROWS = [
+    ['Q','W','E','R','T','Z','U','I','O','P','Š'],
+    ['A','S','D','F','G','H','J','K','L','Č','Ć'],
+    ['BACK','Y','X','C','V','B','N','M','Ž','Đ','LJ','NJ','OK']
+  ];
+
+  const MSGS = [
+    'Savršeno! Iz prvog pokušaja! 🎯',
+    'Fenomenalno! Odlično poznavanje reči! 🔥',
+    'Bravo! Solid rezultat! 👏',
+    'Pogodak! Nije lako, ali ste uspeli! ✅',
+    'Za dlaku! Skoro je izmaklo! 😤',
+    'Uf! Uspeli ste u poslednjoj šansi! 😅'
+  ];
+
+  // --- STANJE IGRE ---
+  let WORDS = [], WORD_SET = new Set();
+  let secret = "", currentRow = 0, currentGuess = "", gameOver = false, keyStates = {};
+
+  // --- POMOCNE FUNKCIJE ---
+  function seededShuffle(arr, seed) {
+    let a = [...arr], m = a.length, t, i;
+    while (m) { i = Math.floor(Math.abs(Math.sin(seed++)) * m--); t = a[m]; a[m] = a[i]; a[i] = t; }
+    return a;
+  }
+
+  function pickSecret(words) {
+    const s = seededShuffle(words, 72941);
+    const diff = Math.floor((new Date() - new Date(2024, 0, 1)) / 86400000);
+    return s[diff % s.length];
+  }
+
+  function splitIntoLetters(w) {
+    const u = w.toUpperCase(), out = [];
+    let i = 0;
+    while (i < u.length) {
+      if (i + 1 < u.length && (u.slice(i, i+2) === 'LJ' || u.slice(i, i+2) === 'NJ' || u.slice(i, i+2) === 'DŽ')) {
+        out.push(u.slice(i, i+2)); i += 2;
+      } else {
+        out.push(u[i]); i++;
+      }
     }
-    return array;
-}
+    return out;
+  }
 
-async function loadWords() {
+  function countLetters(w) { return splitIntoLetters(w).length; }
+
+  // --- UČITAVANJE REČI ---
+  async function loadWords() {
     try {
-        const response = await fetch('reci.txt');
-        const text = await response.text();
-        WORDS = text.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => w.length === 5);
-        WORD_SET = new Set(WORDS);
-        
-        // NOVI RANDOM BROJ ZA MEŠANJE
-        const shuffled = seededShuffle([...WORDS], 72941);
-        
-        const start = new Date(2024, 0, 1);
-        const today = new Date();
-        const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-        
-        secret = shuffled[diff % shuffled.length];
-        createBoard();
-    } catch (err) { document.getElementById("message").innerText = "Greška pri učitavanju baze."; }
-}
-
-function createBoard() {
-    const board = document.getElementById("board");
-    for (let i = 0; i < 6; i++) {
-        const row = document.createElement("div");
-        row.className = "row";
-        for (let j = 0; j < 5; j++) {
-            const tile = document.createElement("div");
-            tile.className = "tile";
-            row.appendChild(tile);
-        }
-        board.appendChild(row);
+      const r = await fetch('reci.txt');
+      const t = await r.text();
+      WORDS = t.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => w.length >= 4 && w.length <= 7);
+      WORD_SET = new Set(WORDS);
+    } catch(e) {
+      WORDS = [...FALLBACK];
+      WORD_SET = new Set(FALLBACK);
     }
-}
+    const cands = WORDS.filter(w => countLetters(w) === 5);
+    secret = pickSecret(cands.length > 5 ? cands : WORDS.filter(w => w.length === 5));
+    if (!secret) secret = FALLBACK[0];
+    buildBoard();
+    buildKeyboard();
+  }
 
-function showMessage(msg) {
-    document.getElementById("message").innerText = msg;
-}
-
-function evaluateGuess(guess, secretWord) {
-    let res = Array(5).fill("absent");
-    let sArr = secretWord.split("");
-    let gArr = guess.split("");
-    for (let i = 0; i < 5; i++) {
-        if (gArr[i] === sArr[i]) { res[i] = "correct"; sArr[i] = null; gArr[i] = null; }
+  // --- IZGRADNJA UI ---
+  function buildBoard() {
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    for (let r = 0; r < 6; r++) {
+      const row = document.createElement('div');
+      row.className = 'row'; row.id = 'row-' + r;
+      for (let c = 0; c < 5; c++) {
+        const tile = document.createElement('div');
+        tile.className = 'circle-tile'; tile.id = `tile-${r}-${c}`;
+        row.appendChild(tile);
+      }
+      board.appendChild(row);
     }
-    for (let i = 0; i < 5; i++) {
-        if (gArr[i] !== null) {
-            let idx = sArr.indexOf(gArr[i]);
-            if (idx !== -1) { res[i] = "present"; sArr[idx] = null; }
-        }
-    }
-    return res;
-}
+  }
 
-function submitGuess() {
+  function buildKeyboard() {
+    const kb = document.getElementById('keyboard');
+    kb.innerHTML = '';
+    KB_ROWS.forEach(row => {
+      const rowEl = document.createElement('div'); rowEl.className = 'kb-row';
+      row.forEach(key => {
+        const btn = document.createElement('button');
+        btn.className = 'kb-key'; btn.dataset.key = key;
+        if (key === 'BACK') { btn.className += ' wide'; btn.textContent = '⌫'; }
+        else if (key === 'OK') { btn.className += ' wide'; btn.textContent = 'OK'; }
+        else if (key === 'LJ' || key === 'NJ') { btn.className += ' wide'; btn.textContent = key; }
+        else { btn.textContent = key; }
+        btn.addEventListener('click', () => handleKey(key));
+        rowEl.appendChild(btn);
+      });
+      kb.appendChild(rowEl);
+    });
+  }
+
+  // --- LOGIKA IGRE ---
+  function updateCurrentRow() {
+    const letters = splitIntoLetters(currentGuess);
+    for (let c = 0; c < 5; c++) {
+      const tile = document.getElementById(`tile-${currentRow}-${c}`);
+      if (letters[c]) { tile.className = 'circle-tile filled'; tile.textContent = letters[c]; }
+      else { tile.className = 'circle-tile'; tile.textContent = ''; }
+    }
+  }
+
+  function handleKey(key) {
     if (gameOver) return;
-    const input = document.getElementById("guessInput");
-    const guess = input.value.toUpperCase().trim();
-
-    if (guess.length !== 5) { showMessage("Reč mora imati 5 slova!"); return; }
-    if (!WORD_SET.has(guess)) { showMessage("Reč nije u bazi!"); return; }
-
-    showMessage("");
-    const tiles = document.getElementById("board").children[currentRow].children;
-    const result = evaluateGuess(guess, secret);
-
-    for (let i = 0; i < 5; i++) {
-        tiles[i].textContent = guess[i];
-        tiles[i].classList.add(result[i]);
+    if (key === 'BACK') {
+      const letters = splitIntoLetters(currentGuess);
+      letters.pop();
+      currentGuess = letters.join('');
+      updateCurrentRow(); return;
     }
+    if (key === 'OK' || key === 'ENTER') { submitGuess(); return; }
+    if (splitIntoLetters(currentGuess + key).length > 5) return;
+    currentGuess += key;
+    const letters = splitIntoLetters(currentGuess);
+    const tile = document.getElementById(`tile-${currentRow}-${letters.length - 1}`);
+    if (tile) { tile.classList.add('pop'); setTimeout(() => tile.classList.remove('pop'), 150); }
+    updateCurrentRow();
+  }
 
-    if (guess === secret) {
+  function evaluateGuess(g, s) {
+    const res = Array(5).fill('absent'), sA = [...s], gA = [...g];
+    for (let i = 0; i < 5; i++) if (gA[i] === sA[i]) { res[i] = 'correct'; sA[i] = null; gA[i] = null; }
+    for (let i = 0; i < 5; i++) if (gA[i] !== null) { const x = sA.indexOf(gA[i]); if (x !== -1) { res[i] = 'present'; sA[x] = null; } }
+    return res;
+  }
+
+  function submitGuess() {
+    if (gameOver) return;
+    const guess = currentGuess.trim().toUpperCase();
+    const letters = splitIntoLetters(guess);
+    if (letters.length !== 5) { showMsg('Reč mora imati 5 slova!'); shakeRow(); return; }
+    if (WORDS.length > 10 && !WORD_SET.has(guess)) { showMsg('Reč nije u bazi!'); shakeRow(); return; }
+    showMsg('');
+    const secLetters = splitIntoLetters(secret);
+    const result = evaluateGuess(letters, secLetters);
+    for (let c = 0; c < 5; c++) {
+      const tile = document.getElementById(`tile-${currentRow}-${c}`);
+      setTimeout(() => { tile.className = 'circle-tile reveal ' + result[c]; }, c * 80);
+      const key = letters[c];
+      const prev = keyStates[key];
+      if (result[c] === 'correct') keyStates[key] = 'correct';
+      else if (result[c] === 'present' && prev !== 'correct') keyStates[key] = 'present';
+      else if (!prev) keyStates[key] = 'absent';
+    }
+    setTimeout(() => {
+      updateAllKeyStates();
+      if (letters.join('') === secLetters.join('')) {
         gameOver = true;
-        input.disabled = true;
-        document.getElementById("nextNote").style.display = "block";
-        if (currentRow === 0) showMessage("Genijalno! Pogodak iz prve! 🏆");
-        else if (currentRow < 3) showMessage("Svaka čast! Odličan rezultat! 👏");
-        else if (currentRow < 5) showMessage("Dobar posao! Pogodili ste! ✅");
-        else showMessage("Uf, zamalo! Uspeli ste u poslednjem trenutku! 😅");
-        return;
-    }
+        document.getElementById('guessInput').disabled = true;
+        showMsg(MSGS[currentRow] || 'Pogodak!');
+        showNextNote(true);
+      } else {
+        currentRow++;
+        currentGuess = '';
+        document.getElementById('guessInput').value = '';
+        if (currentRow === 6) {
+          gameOver = true;
+          document.getElementById('guessInput').disabled = true;
+          showMsg('Kraj igre! Reč je bila: ' + secret);
+          showNextNote(false);
+        }
+      }
+    }, 5 * 80 + 200);
+  }
 
-    currentRow++;
-    input.value = "";
+  function showNextNote(won) {
+    const el = document.getElementById('next-note');
+    el.style.display = 'block';
+    el.innerHTML = won
+      ? 'Nova reč stiže sutra na <strong>021.rs</strong> — vidimo se!'
+      : 'Sutra nova šansa na <strong>021.rs</strong> — srećnije sledeći put!';
+  }
 
-    if (currentRow === 6) {
-        gameOver = true;
-        input.disabled = true;
-        document.getElementById("nextNote").style.display = "block";
-        showMessage("Kraj igre! Rešenje je bilo: " + secret);
-    }
-}
+  function updateAllKeyStates() {
+    document.querySelectorAll('.kb-key').forEach(btn => {
+      const k = btn.dataset.key;
+      if (keyStates[k]) {
+        btn.className = 'kb-key' + (k === 'LJ' || k === 'NJ' || k === 'BACK' || k === 'OK' ? ' wide' : '') + ' ' + keyStates[k];
+      }
+    });
+  }
 
-loadWords();
-document.getElementById("submitBtn").onclick = submitGuess;
-document.getElementById("guessInput").onkeypress = (e) => { if (e.key === "Enter") submitGuess(); };
+  function shakeRow() {
+    const row = document.getElementById('row-' + currentRow);
+    if (!row) return;
+    row.querySelectorAll('.circle-tile').forEach(t => { t.classList.add('shake'); setTimeout(() => t.classList.remove('shake'), 400); });
+  }
+
+  function showMsg(msg) { document.getElementById('message').textContent = msg; }
+  function closeModal() { document.getElementById('modal-how').style.display = 'none'; document.getElementById('guessInput').focus(); }
+  function openModal() { document.getElementById('modal-how').style.display = 'flex'; }
+
+  // --- EVENT LISTENERI ---
+  document.getElementById('guessInput').addEventListener('input', function() {
+    let v = this.value.toUpperCase();
+    const letters = splitIntoLetters(v);
+    if (letters.length > 5) v = letters.slice(0, 5).join('');
+    this.value = v; currentGuess = v; updateCurrentRow();
+  });
+  document.getElementById('guessInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitGuess();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('modal-how').style.display === 'flex') return;
+    if (document.activeElement === document.getElementById('guessInput')) return;
+    const k = e.key.toUpperCase();
+    if (k === 'ENTER') { submitGuess(); return; }
+    if (k === 'BACKSPACE') { handleKey('BACK'); return; }
+    if (k.length === 1 && /[A-ZŠĐČĆŽ]/.test(k)) handleKey(k);
+  });
+
+  loadWords();
 </script>
 </body>
 </html>
