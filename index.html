@@ -6,41 +6,29 @@
   <title>Rečolov - 021.rs</title>
   <style>
     :root {
-      --c-orange: #ff9000;
-      --c-orange-dark: #cc7400;
-      --c-correct: #3d9e55;
-      --c-present: #c49a1a;
-      --c-tile-empty: #18181c;
-      --c-tile-filled: #26262e;
-      --c-tile-absent: #222228;
-      --tile: 54px;
-      --gap: 8px;
+      --c-orange: #ff9000; --c-orange-dark: #cc7400;
+      --c-correct: #3d9e55; --c-present: #c49a1a;
+      --c-tile-empty: #18181c; --c-tile-filled: #26262e; --c-tile-absent: #222228;
+      --tile: 54px; --gap: 8px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0e0e10; color: #f0f0f0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
     #app { max-width: 500px; margin: 0 auto; padding: 0 10px 40px; }
-
     #header { display: flex; align-items: center; justify-content: space-between; padding: 14px 2px 12px; border-bottom: 1px solid #222228; margin-bottom: 10px; }
     #title-block { display: flex; align-items: baseline; gap: 10px; }
     #title { font-size: 20px; font-weight: 800; letter-spacing: 4px; color: #f0f0f0; }
     #brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c-orange); flex-shrink: 0; align-self: center; }
     #brand { font-size: 11px; font-weight: 800; color: var(--c-orange); letter-spacing: 2.5px; }
-    #help-btn { background: none; border: 1.5px solid #333; color: #888; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    #header-right { display: flex; align-items: center; gap: 8px; }
+    #script-toggle { background: #222228; border: 1.5px solid #3a3a42; border-radius: 8px; color: #f0f0f0; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; padding: 5px 10px; display: flex; align-items: center; gap: 5px; transition: border-color 0.15s; }
+    #script-toggle:hover { border-color: var(--c-orange); }
+    #script-toggle .active-script { color: var(--c-orange); }
+    #script-toggle .sep { color: #444; }
+    #help-btn { background: none; border: 1.5px solid #333; color: #888; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     #help-btn:hover { border-color: var(--c-orange); color: var(--c-orange); }
-
     #board { display: flex; flex-direction: column; align-items: center; gap: var(--gap); margin-bottom: 14px; }
     .row { display: flex; gap: var(--gap); }
-
-    .circle-tile {
-      width: var(--tile); height: var(--tile);
-      border-radius: 50%;
-      background: var(--c-tile-empty);
-      border: 2px solid #2a2a30;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; font-weight: 800; text-transform: uppercase;
-      color: #f0f0f0; user-select: none;
-      transition: background 0.2s, border-color 0.2s, transform 0.1s;
-    }
+    .circle-tile { width: var(--tile); height: var(--tile); border-radius: 50%; background: var(--c-tile-empty); border: 2px solid #2a2a30; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #f0f0f0; user-select: none; transition: background 0.2s, border-color 0.2s, transform 0.1s; }
     .circle-tile.filled { background: var(--c-tile-filled); border-color: #555; }
     .circle-tile.correct { background: var(--c-correct); border-color: var(--c-correct); color: #fff; }
     .circle-tile.present { background: var(--c-present); border-color: var(--c-present); color: #fff; }
@@ -51,42 +39,30 @@
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
     .circle-tile.reveal { animation: reveal 0.35s ease forwards; }
     @keyframes reveal { 0%{transform:scale(1)} 40%{transform:scale(0.85)} 100%{transform:scale(1)} }
-
     #message-area { text-align: center; min-height: 26px; margin-bottom: 10px; }
     #message { font-size: 13px; font-weight: 700; color: var(--c-orange); letter-spacing: 0.5px; }
-
-    #keyboard { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 12px; }
-    .kb-row { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-    .kb-key {
-      height: 42px; min-width: 28px; padding: 0 6px;
-      background: #222228; border: none; border-radius: 50%;
-      color: #ddd; font-size: 12px; font-weight: 800;
-      cursor: pointer; text-transform: uppercase;
-      transition: background 0.15s, color 0.15s;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; width: 34px;
-    }
-    .kb-key:active { transform: scale(0.9); }
-    .kb-key.wide { border-radius: 21px; width: auto; min-width: 46px; font-size: 11px; }
+    #keyboard { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 10px; width: 100%; }
+    .kb-row { display: flex; gap: 5px; justify-content: center; width: 100%; }
+    .kb-key { height: 46px; flex: 1; max-width: 42px; min-width: 0; padding: 0; background: #2a2a30; border: none; border-radius: 8px; color: #ddd; font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: background 0.15s, color 0.15s; display: flex; align-items: center; justify-content: center; }
+    .kb-key:active { transform: scale(0.92); background: #3a3a42; }
+    .kb-key.wide-di { flex: 1.7; max-width: 62px; font-size: 12px; }
     .kb-key.correct { background: var(--c-correct); color: #fff; }
     .kb-key.present { background: var(--c-present); color: #fff; }
     .kb-key.absent { background: #18181c; color: #3a3a40; text-decoration: line-through; }
-
+    #action-row { display: flex; gap: 8px; justify-content: center; width: 100%; margin-bottom: 6px; }
+    #back-btn { flex: 1; max-width: 200px; height: 48px; background: #2a2a30; border: none; border-radius: 10px; color: #f0f0f0; font-size: 20px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    #back-btn:active { background: #3a3a42; transform: scale(0.97); }
+    #ok-btn { flex: 1; max-width: 200px; height: 48px; background: var(--c-orange); border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    #ok-btn:active { background: var(--c-orange-dark); transform: scale(0.97); }
     #input-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
-    #guessInput {
-      padding: 9px 14px; font-size: 17px; text-transform: uppercase; letter-spacing: 3px;
-      border: 1.5px solid #2e2e38; border-radius: 24px; width: 175px;
-      background: #16161a; color: #f0f0f0; text-align: center; outline: none;
-    }
+    #guessInput { padding: 9px 14px; font-size: 17px; text-transform: uppercase; letter-spacing: 3px; border: 1.5px solid #2e2e38; border-radius: 24px; width: 175px; background: #16161a; color: #f0f0f0; text-align: center; outline: none; }
     #guessInput:focus { border-color: var(--c-orange); }
     #guessInput::placeholder { color: #444; letter-spacing: 1px; font-size: 13px; }
     #guessInput:disabled { opacity: 0.4; }
     #submitBtn { padding: 9px 18px; font-size: 14px; font-weight: 800; background: var(--c-orange); color: #fff; border: none; border-radius: 22px; cursor: pointer; letter-spacing: 1px; }
     #submitBtn:hover { background: var(--c-orange-dark); }
-
     #next-note { text-align: center; font-size: 12px; color: #888; margin-top: 10px; display: none; line-height: 1.5; }
     #next-note strong { color: var(--c-orange); }
-
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; }
     .modal-box { background: #141416; border: 1px solid #2a2a30; border-radius: 16px; padding: 24px 20px 18px; width: 92%; max-width: 380px; position: relative; max-height: 92vh; overflow-y: auto; }
     .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: #555; font-size: 20px; cursor: pointer; }
@@ -106,24 +82,24 @@
   </style>
 </head>
 <body>
-
 <div id="app">
   <div id="modal-how" class="modal-overlay">
     <div class="modal-box" role="dialog" aria-modal="true">
-      <button class="modal-close" onclick="closeModal()">×</button>
+      <button class="modal-close" onclick="closeModal()">&#215;</button>
       <div style="text-align:center"><span class="orange-pill">021.RS</span></div>
       <h2>KAKO IGRATI?</h2>
       <p>Pogodite <strong style="color:#f0f0f0">REČOLOV</strong> u 6 pokušaja.</p>
       <ul>
         <li>Svaki pokušaj mora biti ispravna reč od 5 slova.</li>
         <li>Boja krugova otkriva koliko ste blizu.</li>
+        <li>Možete kucati i ćirilicom — automatski se prepoznaje.</li>
       </ul>
       <hr>
-      <div class="example-row"><div class="mini-circle correct">V</div><span>Slovo je na <strong style="color:#f0f0f0">tačnom mestu</strong>.</span></div>
-      <div class="example-row"><div class="mini-circle present">O</div><span>Slovo postoji, ali je na <strong style="color:#f0f0f0">pogrešnom mestu</strong>.</span></div>
-      <div class="example-row"><div class="mini-circle absent">U</div><span>Slovo se <strong style="color:#f0f0f0">ne nalazi</strong> u reči.</span></div>
+      <div class="example-row"><div class="mini-circle correct">В</div><span>Slovo je na <strong style="color:#f0f0f0">tačnom mestu</strong>.</span></div>
+      <div class="example-row"><div class="mini-circle present">О</div><span>Slovo postoji, ali je na <strong style="color:#f0f0f0">pogrešnom mestu</strong>.</span></div>
+      <div class="example-row"><div class="mini-circle absent">У</div><span>Slovo se <strong style="color:#f0f0f0">ne nalazi</strong> u reči.</span></div>
       <hr>
-      <p><strong style="color:#f0f0f0">LJ</strong> i <strong style="color:#f0f0f0">NJ</strong> su posebna dugmad na tastaturi — unose se kao jedno slovo.</p>
+      <p><strong style="color:#f0f0f0">LJ</strong>, <strong style="color:#f0f0f0">NJ</strong> i <strong style="color:#f0f0f0">DŽ</strong> su posebna dugmad — unose se kao jedno slovo.</p>
       <button class="modal-start-btn" onclick="closeModal()">KRENI</button>
     </div>
   </div>
@@ -134,252 +110,293 @@
       <div id="brand-dot" aria-hidden="true"></div>
       <div id="brand">021.RS</div>
     </div>
-    <button id="help-btn" onclick="openModal()" aria-label="Kako igrati">?</button>
+    <div id="header-right">
+      <button id="script-toggle" onclick="toggleScript()" title="Promeni pismo tastature"></button>
+      <button id="help-btn" onclick="openModal()" aria-label="Kako igrati">?</button>
+    </div>
   </div>
 
   <div id="message-area"><div id="message"></div></div>
   <div id="board"></div>
   <div id="keyboard"></div>
+  <div id="action-row">
+    <button id="back-btn" onclick="handleKey('BACK')" aria-label="Obriši">&#x232B;</button>
+    <button id="ok-btn" onclick="submitGuess()">POTVRDI</button>
+  </div>
   <div id="input-row">
-    <input id="guessInput" maxlength="7" placeholder="unesite reč" autocomplete="off" autocorrect="off" spellcheck="false" />
+    <input id="guessInput" maxlength="10" placeholder="unesite reč" autocomplete="off" autocorrect="off" spellcheck="false" />
     <button id="submitBtn" onclick="submitGuess()">OK</button>
   </div>
   <div id="next-note"></div>
 </div>
 
 <script>
-  // --- KONFIGURACIJA ---
-  // Stavite listu reči u reci.txt u isti folder kao ovaj fajl.
-  // Format: jedna reč po redu, samo reči od 5 slova (ili 5 "glasova" — LJ/NJ se računaju kao jedan).
-  // Ako reci.txt nije dostupan, koristi se fallback lista ispod.
+// ── ĆIRILICA → LATINICA ──────────────────────────────────────────────────────
+const CYR_TO_LAT = [
+  ['\u0459','LJ'],['\u045A','NJ'],['\u045F','D\u017D'],
+  ['\u0452','\u0110'],['\u0436','\u017D'],['\u0447','\u010C'],['\u045B','\u0106'],['\u0448','\u0160'],
+  ['\u0430','A'],['\u0431','B'],['\u0432','V'],['\u0433','G'],['\u0434','D'],
+  ['\u0435','E'],['\u0437','Z'],['\u0438','I'],['\u0458','J'],['\u043A','K'],
+  ['\u043B','L'],['\u043C','M'],['\u043D','N'],['\u043E','O'],['\u043F','P'],
+  ['\u0440','R'],['\u0441','S'],['\u0442','T'],['\u0443','U'],['\u0444','F'],
+  ['\u0445','H'],['\u0446','C'],
+  ['\u0409','LJ'],['\u040A','NJ'],['\u040F','D\u017D'],
+  ['\u0402','\u0110'],['\u0416','\u017D'],['\u0427','\u010C'],['\u040B','\u0106'],['\u0428','\u0160'],
+  ['\u0410','A'],['\u0411','B'],['\u0412','V'],['\u0413','G'],['\u0414','D'],
+  ['\u0415','E'],['\u0417','Z'],['\u0418','I'],['\u0408','J'],['\u041A','K'],
+  ['\u041B','L'],['\u041C','M'],['\u041D','N'],['\u041E','O'],['\u041F','P'],
+  ['\u0420','R'],['\u0421','S'],['\u0422','T'],['\u0423','U'],['\u0424','F'],
+  ['\u0425','H'],['\u0426','C'],
+];
+function cyrToLat(str) {
+  let out = str;
+  for (const [c, l] of CYR_TO_LAT) out = out.split(c).join(l);
+  return out;
+}
 
-  const FALLBACK = [
-    "SRBIN","VATRA","KAMEN","LOPTA","PESMA","ZEMLJA","DRAGA","CRVEN","SNAGA","NOVAC",
-    "BRIGA","ZRAKA","MIRAN","VETAR","KAPUT","RAVAN","LEKAR","PLIMA","TURBO","NAMAZ",
-    "BRLOG","KRIVA","VRSTA","KORAK","SVILA","MAGLA","PRUGA","MAŠTA","GRUDA","ZLOBA",
-    "DRAGI","MUTAN","VOLAN","BLAGO","SUNCE","TRAVA","POLJE"
-  ];
+// LATINICA → ĆIRILICA (za prikaz na pločicama i tastaturi)
+const LAT_TO_CYR = {
+  'LJ':'\u0409','NJ':'\u040A','D\u017D':'\u040F',
+  '\u0110':'\u0402','\u017D':'\u0416','\u010C':'\u0427','\u0106':'\u040B','\u0160':'\u0428',
+  'A':'\u0410','B':'\u0411','C':'\u0426','D':'\u0414','E':'\u0415','F':'\u0424','G':'\u0413','H':'\u0425',
+  'I':'\u0418','J':'\u0408','K':'\u041A','L':'\u041B','M':'\u041C','N':'\u041D','O':'\u041E','P':'\u041F',
+  'R':'\u0420','S':'\u0421','T':'\u0422','U':'\u0423','V':'\u0412','Z':'\u0417'
+};
 
-  const KB_ROWS = [
-    ['Q','W','E','R','T','Z','U','I','O','P','Š'],
-    ['A','S','D','F','G','H','J','K','L','Č','Ć'],
-    ['BACK','Y','X','C','V','B','N','M','Ž','Đ','LJ','NJ','OK']
-  ];
+// ── TASTATURA ─────────────────────────────────────────────────────────────────
+const KB_LAT = [
+  ['E','R','T','U','I','O','P','\u0160'],
+  ['A','S','D','F','G','H','J','K','L','\u010C','\u0106'],
+  ['Z','C','V','B','N','M','\u017D','\u0110','LJ','NJ','D\u017D']
+];
+const KB_CYR = [
+  ['\u0415','\u0420','\u0422','\u0423','\u0418','\u041E','\u041F','\u0428'],
+  ['\u0410','\u0421','\u0414','\u0424','\u0413','\u0425','\u0408','\u041A','\u041B','\u0427','\u040B'],
+  ['\u0417','\u0426','\u0412','\u0411','\u041D','\u041C','\u0416','\u0402','\u0409','\u040A','\u040F']
+];
+const CYR_DIGRAPHS = ['\u0409','\u040A','\u040F'];
+const LAT_DIGRAPHS = ['LJ','NJ','D\u017D'];
 
-  const MSGS = [
-    'Savršeno! Iz prvog pokušaja! 🎯',
-    'Fenomenalno! Odlično poznavanje reči! 🔥',
-    'Bravo! Solid rezultat! 👏',
-    'Pogodak! Nije lako, ali ste uspeli! ✅',
-    'Za dlaku! Skoro je izmaklo! 😤',
-    'Uf! Uspeli ste u poslednjoj šansi! 😅'
-  ];
+let scriptMode = 'lat';
 
-  // --- STANJE IGRE ---
-  let WORDS = [], WORD_SET = new Set();
-  let secret = "", currentRow = 0, currentGuess = "", gameOver = false, keyStates = {};
+function toggleScript() {
+  scriptMode = scriptMode === 'lat' ? 'cyr' : 'lat';
+  buildKeyboard();
+  updateScriptToggle();
+}
+function updateScriptToggle() {
+  const btn = document.getElementById('script-toggle');
+  btn.innerHTML = scriptMode === 'lat'
+    ? '<span class="active-script">LAT</span><span class="sep">/</span><span>\u040B\u0418\u0420</span>'
+    : '<span>LAT</span><span class="sep">/</span><span class="active-script">\u040B\u0418\u0420</span>';
+}
+function displayLetter(latLetter) {
+  return scriptMode === 'cyr' ? (LAT_TO_CYR[latLetter] || latLetter) : latLetter;
+}
 
-  // --- POMOCNE FUNKCIJE ---
-  function seededShuffle(arr, seed) {
-    let a = [...arr], m = a.length, t, i;
-    while (m) { i = Math.floor(Math.abs(Math.sin(seed++)) * m--); t = a[m]; a[m] = a[i]; a[i] = t; }
-    return a;
+// ── REČI ──────────────────────────────────────────────────────────────────────
+// Stavite reci.txt u isti folder — jedna reč po redu, latinica, 5 slova
+// (LJ / NJ / DŽ se računaju kao jedno slovo).
+// Ako fajl nije dostupan, koristi se lista ispod.
+const FALLBACK = [
+  "SRBIN","VATRA","KAMEN","LOPTA","PESMA","DRAGA","CRVEN","SNAGA","NOVAC",
+  "BRIGA","ZRAKA","MIRAN","VETAR","KAPUT","RAVAN","LEKAR","PLIMA","TURBO","NAMAZ",
+  "BRLOG","KRIVA","VRSTA","KORAK","SVILA","MAGLA","PRUGA","MA\u0160TA","GRUDA","ZLOBA",
+  "DRAGI","MUTAN","VOLAN","BLAGO","SUNCE","TRAVA","POLJE"
+];
+const MSGS = [
+  'Savr\u0161eno! Iz prvog poku\u0161aja! \uD83C\uDFAF',
+  'Fenomenalno! Odli\u010dno poznavanje re\u010di! \uD83D\uDD25',
+  'Bravo! Solid rezultat! \uD83D\uDC4F',
+  'Pogodak! Nije lako, ali ste uspeli! \u2705',
+  'Za dlaku! Skoro je izmaklo! \uD83D\uDE24',
+  'Uf! Uspeli ste u poslednjoj \u0161ansi! \uD83D\uDE05'
+];
+
+// ── STANJE IGRE ───────────────────────────────────────────────────────────────
+let WORDS = [], WORD_SET = new Set();
+let secret = "", currentRow = 0, currentGuess = "", gameOver = false, keyStates = {};
+
+function seededShuffle(arr, seed) {
+  let a = [...arr], m = a.length, t, i;
+  while (m) { i = Math.floor(Math.abs(Math.sin(seed++)) * m--); t = a[m]; a[m] = a[i]; a[i] = t; }
+  return a;
+}
+function pickSecret(words) {
+  // Promenite seed (72941) kada menjate listu reči da biste resetovali raspored
+  const s = seededShuffle(words, 72941);
+  const diff = Math.floor((new Date() - new Date(2024, 0, 1)) / 86400000);
+  return s[diff % s.length];
+}
+function splitIntoLetters(w) {
+  const u = w.toUpperCase(), out = [];
+  let i = 0;
+  while (i < u.length) {
+    if (i+1 < u.length && (u.slice(i,i+2)==='LJ'||u.slice(i,i+2)==='NJ'||u.slice(i,i+2)==='D\u017D')) {
+      out.push(u.slice(i,i+2)); i += 2;
+    } else { out.push(u[i]); i++; }
   }
+  return out;
+}
+function countLetters(w) { return splitIntoLetters(w).length; }
 
-  function pickSecret(words) {
-    const s = seededShuffle(words, 72941);
-    const diff = Math.floor((new Date() - new Date(2024, 0, 1)) / 86400000);
-    return s[diff % s.length];
+// ── INICIJALIZACIJA ───────────────────────────────────────────────────────────
+async function loadWords() {
+  try {
+    const r = await fetch('reci.txt');
+    const t = await r.text();
+    WORDS = t.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => w.length >= 4 && w.length <= 7);
+    WORD_SET = new Set(WORDS);
+  } catch(e) {
+    WORDS = [...FALLBACK]; WORD_SET = new Set(FALLBACK);
   }
+  const cands = WORDS.filter(w => countLetters(w) === 5);
+  secret = pickSecret(cands.length > 5 ? cands : WORDS.filter(w => w.length === 5));
+  if (!secret) secret = FALLBACK[0];
+  buildBoard(); buildKeyboard(); updateScriptToggle();
+}
 
-  function splitIntoLetters(w) {
-    const u = w.toUpperCase(), out = [];
-    let i = 0;
-    while (i < u.length) {
-      if (i + 1 < u.length && (u.slice(i, i+2) === 'LJ' || u.slice(i, i+2) === 'NJ' || u.slice(i, i+2) === 'DŽ')) {
-        out.push(u.slice(i, i+2)); i += 2;
-      } else {
-        out.push(u[i]); i++;
-      }
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  for (let r = 0; r < 6; r++) {
+    const row = document.createElement('div');
+    row.className = 'row'; row.id = 'row-' + r;
+    for (let c = 0; c < 5; c++) {
+      const tile = document.createElement('div');
+      tile.className = 'circle-tile'; tile.id = 'tile-' + r + '-' + c;
+      row.appendChild(tile);
     }
-    return out;
+    board.appendChild(row);
   }
+}
 
-  function countLetters(w) { return splitIntoLetters(w).length; }
-
-  // --- UČITAVANJE REČI ---
-  async function loadWords() {
-    try {
-      const r = await fetch('reci.txt');
-      const t = await r.text();
-      WORDS = t.split(/\r?\n/).map(w => w.trim().toUpperCase()).filter(w => w.length >= 4 && w.length <= 7);
-      WORD_SET = new Set(WORDS);
-    } catch(e) {
-      WORDS = [...FALLBACK];
-      WORD_SET = new Set(FALLBACK);
-    }
-    const cands = WORDS.filter(w => countLetters(w) === 5);
-    secret = pickSecret(cands.length > 5 ? cands : WORDS.filter(w => w.length === 5));
-    if (!secret) secret = FALLBACK[0];
-    buildBoard();
-    buildKeyboard();
-  }
-
-  // --- IZGRADNJA UI ---
-  function buildBoard() {
-    const board = document.getElementById('board');
-    board.innerHTML = '';
-    for (let r = 0; r < 6; r++) {
-      const row = document.createElement('div');
-      row.className = 'row'; row.id = 'row-' + r;
-      for (let c = 0; c < 5; c++) {
-        const tile = document.createElement('div');
-        tile.className = 'circle-tile'; tile.id = `tile-${r}-${c}`;
-        row.appendChild(tile);
-      }
-      board.appendChild(row);
-    }
-  }
-
-  function buildKeyboard() {
-    const kb = document.getElementById('keyboard');
-    kb.innerHTML = '';
-    KB_ROWS.forEach(row => {
-      const rowEl = document.createElement('div'); rowEl.className = 'kb-row';
-      row.forEach(key => {
-        const btn = document.createElement('button');
-        btn.className = 'kb-key'; btn.dataset.key = key;
-        if (key === 'BACK') { btn.className += ' wide'; btn.textContent = '⌫'; }
-        else if (key === 'OK') { btn.className += ' wide'; btn.textContent = 'OK'; }
-        else if (key === 'LJ' || key === 'NJ') { btn.className += ' wide'; btn.textContent = key; }
-        else { btn.textContent = key; }
-        btn.addEventListener('click', () => handleKey(key));
-        rowEl.appendChild(btn);
-      });
-      kb.appendChild(rowEl);
+function buildKeyboard() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  const rows = scriptMode === 'cyr' ? KB_CYR : KB_LAT;
+  rows.forEach(row => {
+    const rowEl = document.createElement('div'); rowEl.className = 'kb-row';
+    row.forEach(key => {
+      const btn = document.createElement('button');
+      const isDigraph = (scriptMode === 'lat' && LAT_DIGRAPHS.includes(key))
+                     || (scriptMode === 'cyr' && CYR_DIGRAPHS.includes(key));
+      const latKey = scriptMode === 'cyr' ? cyrToLat(key).toUpperCase() : key;
+      btn.className = 'kb-key' + (isDigraph ? ' wide-di' : '');
+      if (keyStates[latKey]) btn.className += ' ' + keyStates[latKey];
+      btn.textContent = key;
+      btn.dataset.key = latKey;
+      btn.addEventListener('click', () => handleKey(latKey));
+      rowEl.appendChild(btn);
     });
-  }
+    kb.appendChild(rowEl);
+  });
+}
 
-  // --- LOGIKA IGRE ---
-  function updateCurrentRow() {
-    const letters = splitIntoLetters(currentGuess);
-    for (let c = 0; c < 5; c++) {
-      const tile = document.getElementById(`tile-${currentRow}-${c}`);
-      if (letters[c]) { tile.className = 'circle-tile filled'; tile.textContent = letters[c]; }
-      else { tile.className = 'circle-tile'; tile.textContent = ''; }
-    }
+// ── LOGIKA ────────────────────────────────────────────────────────────────────
+function updateCurrentRow() {
+  const letters = splitIntoLetters(currentGuess);
+  for (let c = 0; c < 5; c++) {
+    const tile = document.getElementById('tile-' + currentRow + '-' + c);
+    if (letters[c]) { tile.className = 'circle-tile filled'; tile.textContent = displayLetter(letters[c]); }
+    else { tile.className = 'circle-tile'; tile.textContent = ''; }
   }
+}
 
-  function handleKey(key) {
-    if (gameOver) return;
-    if (key === 'BACK') {
-      const letters = splitIntoLetters(currentGuess);
-      letters.pop();
-      currentGuess = letters.join('');
-      updateCurrentRow(); return;
-    }
-    if (key === 'OK' || key === 'ENTER') { submitGuess(); return; }
-    if (splitIntoLetters(currentGuess + key).length > 5) return;
-    currentGuess += key;
-    const letters = splitIntoLetters(currentGuess);
-    const tile = document.getElementById(`tile-${currentRow}-${letters.length - 1}`);
-    if (tile) { tile.classList.add('pop'); setTimeout(() => tile.classList.remove('pop'), 150); }
-    updateCurrentRow();
+function handleKey(key) {
+  if (gameOver) return;
+  if (key === 'BACK') {
+    const letters = splitIntoLetters(currentGuess); letters.pop();
+    currentGuess = letters.join(''); updateCurrentRow(); return;
   }
+  if (key === 'OK' || key === 'ENTER') { submitGuess(); return; }
+  if (splitIntoLetters(currentGuess + key).length > 5) return;
+  currentGuess += key;
+  const letters = splitIntoLetters(currentGuess);
+  const tile = document.getElementById('tile-' + currentRow + '-' + (letters.length - 1));
+  if (tile) { tile.classList.add('pop'); setTimeout(() => tile.classList.remove('pop'), 150); }
+  updateCurrentRow();
+}
 
-  function evaluateGuess(g, s) {
-    const res = Array(5).fill('absent'), sA = [...s], gA = [...g];
-    for (let i = 0; i < 5; i++) if (gA[i] === sA[i]) { res[i] = 'correct'; sA[i] = null; gA[i] = null; }
-    for (let i = 0; i < 5; i++) if (gA[i] !== null) { const x = sA.indexOf(gA[i]); if (x !== -1) { res[i] = 'present'; sA[x] = null; } }
-    return res;
-  }
+function evaluateGuess(g, s) {
+  const res = Array(5).fill('absent'), sA = [...s], gA = [...g];
+  for (let i = 0; i < 5; i++) if (gA[i] === sA[i]) { res[i] = 'correct'; sA[i] = null; gA[i] = null; }
+  for (let i = 0; i < 5; i++) if (gA[i] !== null) { const x = sA.indexOf(gA[i]); if (x !== -1) { res[i] = 'present'; sA[x] = null; } }
+  return res;
+}
 
-  function submitGuess() {
-    if (gameOver) return;
-    const guess = currentGuess.trim().toUpperCase();
-    const letters = splitIntoLetters(guess);
-    if (letters.length !== 5) { showMsg('Reč mora imati 5 slova!'); shakeRow(); return; }
-    if (WORDS.length > 10 && !WORD_SET.has(guess)) { showMsg('Reč nije u bazi!'); shakeRow(); return; }
-    showMsg('');
-    const secLetters = splitIntoLetters(secret);
-    const result = evaluateGuess(letters, secLetters);
-    for (let c = 0; c < 5; c++) {
-      const tile = document.getElementById(`tile-${currentRow}-${c}`);
-      setTimeout(() => { tile.className = 'circle-tile reveal ' + result[c]; }, c * 80);
-      const key = letters[c];
-      const prev = keyStates[key];
-      if (result[c] === 'correct') keyStates[key] = 'correct';
-      else if (result[c] === 'present' && prev !== 'correct') keyStates[key] = 'present';
-      else if (!prev) keyStates[key] = 'absent';
-    }
+function submitGuess() {
+  if (gameOver) return;
+  const guess = currentGuess.trim().toUpperCase();
+  const letters = splitIntoLetters(guess);
+  if (letters.length !== 5) { showMsg('Re\u010d mora imati 5 slova!'); shakeRow(); return; }
+  if (WORDS.length > 10 && !WORD_SET.has(guess)) { showMsg('Re\u010d nije u bazi!'); shakeRow(); return; }
+  showMsg('');
+  const secLetters = splitIntoLetters(secret);
+  const result = evaluateGuess(letters, secLetters);
+  for (let c = 0; c < 5; c++) {
+    const tile = document.getElementById('tile-' + currentRow + '-' + c);
     setTimeout(() => {
-      updateAllKeyStates();
-      if (letters.join('') === secLetters.join('')) {
-        gameOver = true;
-        document.getElementById('guessInput').disabled = true;
-        showMsg(MSGS[currentRow] || 'Pogodak!');
-        showNextNote(true);
-      } else {
-        currentRow++;
-        currentGuess = '';
-        document.getElementById('guessInput').value = '';
-        if (currentRow === 6) {
-          gameOver = true;
-          document.getElementById('guessInput').disabled = true;
-          showMsg('Kraj igre! Reč je bila: ' + secret);
-          showNextNote(false);
-        }
+      tile.className = 'circle-tile reveal ' + result[c];
+      tile.textContent = displayLetter(letters[c]);
+    }, c * 80);
+    const key = letters[c]; const prev = keyStates[key];
+    if (result[c] === 'correct') keyStates[key] = 'correct';
+    else if (result[c] === 'present' && prev !== 'correct') keyStates[key] = 'present';
+    else if (!prev) keyStates[key] = 'absent';
+  }
+  setTimeout(() => {
+    buildKeyboard();
+    if (letters.join('') === secLetters.join('')) {
+      gameOver = true; document.getElementById('guessInput').disabled = true;
+      showMsg(MSGS[currentRow] || 'Pogodak!'); showNextNote(true);
+    } else {
+      currentRow++; currentGuess = ''; document.getElementById('guessInput').value = '';
+      if (currentRow === 6) {
+        gameOver = true; document.getElementById('guessInput').disabled = true;
+        showMsg('Kraj igre! Re\u010d je bila: ' + secret); showNextNote(false);
       }
-    }, 5 * 80 + 200);
-  }
+    }
+  }, 5 * 80 + 200);
+}
 
-  function showNextNote(won) {
-    const el = document.getElementById('next-note');
-    el.style.display = 'block';
-    el.innerHTML = won
-      ? 'Nova reč stiže sutra na <strong>021.rs</strong> — vidimo se!'
-      : 'Sutra nova šansa na <strong>021.rs</strong> — srećnije sledeći put!';
-  }
+function showNextNote(won) {
+  const el = document.getElementById('next-note'); el.style.display = 'block';
+  el.innerHTML = won
+    ? 'Nova re\u010d sti\u017ee sutra na <strong>021.rs</strong> \u2014 vidimo se!'
+    : 'Sutra nova \u0161ansa na <strong>021.rs</strong> \u2014 sre\u0107nije slede\u0107i put!';
+}
+function shakeRow() {
+  const row = document.getElementById('row-' + currentRow); if (!row) return;
+  row.querySelectorAll('.circle-tile').forEach(t => { t.classList.add('shake'); setTimeout(() => t.classList.remove('shake'), 400); });
+}
+function showMsg(msg) { document.getElementById('message').textContent = msg; }
+function closeModal() { document.getElementById('modal-how').style.display = 'none'; document.getElementById('guessInput').focus(); }
+function openModal() { document.getElementById('modal-how').style.display = 'flex'; }
 
-  function updateAllKeyStates() {
-    document.querySelectorAll('.kb-key').forEach(btn => {
-      const k = btn.dataset.key;
-      if (keyStates[k]) {
-        btn.className = 'kb-key' + (k === 'LJ' || k === 'NJ' || k === 'BACK' || k === 'OK' ? ' wide' : '') + ' ' + keyStates[k];
-      }
-    });
-  }
+// ── EVENT LISTENERI ───────────────────────────────────────────────────────────
+document.getElementById('guessInput').addEventListener('input', function() {
+  let v = cyrToLat(this.value).toUpperCase();
+  const letters = splitIntoLetters(v);
+  if (letters.length > 5) v = letters.slice(0, 5).join('');
+  this.value = scriptMode === 'cyr' ? splitIntoLetters(v).map(l => LAT_TO_CYR[l] || l).join('') : v;
+  currentGuess = cyrToLat(v).toUpperCase();
+  updateCurrentRow();
+});
+document.getElementById('guessInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitGuess();
+});
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('modal-how').style.display === 'flex') return;
+  if (document.activeElement === document.getElementById('guessInput')) return;
+  const raw = e.key;
+  const converted = cyrToLat(raw).toUpperCase();
+  if (converted === 'ENTER') { submitGuess(); return; }
+  if (raw === 'Backspace') { handleKey('BACK'); return; }
+  if (converted.length === 1 && /[A-Z\u0160\u0110\u010C\u0106\u017D]/.test(converted)) handleKey(converted);
+});
 
-  function shakeRow() {
-    const row = document.getElementById('row-' + currentRow);
-    if (!row) return;
-    row.querySelectorAll('.circle-tile').forEach(t => { t.classList.add('shake'); setTimeout(() => t.classList.remove('shake'), 400); });
-  }
-
-  function showMsg(msg) { document.getElementById('message').textContent = msg; }
-  function closeModal() { document.getElementById('modal-how').style.display = 'none'; document.getElementById('guessInput').focus(); }
-  function openModal() { document.getElementById('modal-how').style.display = 'flex'; }
-
-  // --- EVENT LISTENERI ---
-  document.getElementById('guessInput').addEventListener('input', function() {
-    let v = this.value.toUpperCase();
-    const letters = splitIntoLetters(v);
-    if (letters.length > 5) v = letters.slice(0, 5).join('');
-    this.value = v; currentGuess = v; updateCurrentRow();
-  });
-  document.getElementById('guessInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') submitGuess();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (document.getElementById('modal-how').style.display === 'flex') return;
-    if (document.activeElement === document.getElementById('guessInput')) return;
-    const k = e.key.toUpperCase();
-    if (k === 'ENTER') { submitGuess(); return; }
-    if (k === 'BACKSPACE') { handleKey('BACK'); return; }
-    if (k.length === 1 && /[A-ZŠĐČĆŽ]/.test(k)) handleKey(k);
-  });
-
-  loadWords();
+loadWords();
 </script>
 </body>
 </html>
