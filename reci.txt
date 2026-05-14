@@ -1419,7 +1419,6 @@ vikao
 vikar
 vikah
 vikač
-vikli
 vikne
 vikni
 viknu
@@ -5522,10 +5521,6 @@ klizi
 klija
 klije
 klika
-klike
-kliki
-kliko
-kliku
 klima
 klime
 klimi
