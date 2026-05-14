@@ -3,7 +3,6 @@ avale
 avali
 avalu
 avans
-avanu
 aveti
 avion
 AVNOJ
@@ -11,10 +10,6 @@ agens
 agent
 agora
 agori
-agrar
-adama
-adeta
-adetu
 aduta
 adute
 aduti
@@ -33,10 +28,7 @@ azotu
 azura
 azuru
 ajaks
-ajaoj
 ajvar
-ajgir
-ajncu
 Ajfel
 akata
 akord
@@ -48,7 +40,6 @@ alava
 alave
 alavi
 alavo
-alali
 alama
 alarm
 alasa
@@ -61,7 +52,6 @@ alati
 alatu
 alaha
 alahu
-alaču
 album
 alvin
 alvom
@@ -78,7 +68,6 @@ alema
 aleme
 alemi
 alemu
-alefa
 Alžir
 alibi
 Alija
@@ -91,9 +80,7 @@ alkar
 alkom
 alovu
 aloja
-aloje
 alter
-alčak
 amama
 amamu
 amana
